@@ -1,2 +1,2 @@
-# aplicacoes_moveis_hibridas
-Este repositório contém as soluções e implementações desenvolvidas na disciplina DAMH.
+# estruturas_de_dados_linguagem_c
+Este repositório contém implementações desenvolvidas com estruturas de dados em linguagem C.
