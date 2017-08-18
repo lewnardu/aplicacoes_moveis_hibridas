@@ -65,6 +65,37 @@ void func_add(struct No** list){
     func_insert(list, NULL, id, name);
 }
 
+struct No** func_search(struct No** list, char* keyName){
+    if(!func_isNull(*list)){
+        if(strcmp((*list)->name, keyName) == 0){
+            return list;
+        }else{
+            func_search(&(*list)->next, keyName);    
+        }
+    }
+    return NULL;
+}
+
+
+void func_update(struct No** list, char* keyName){
+    struct No** myReturn = func_search(&(*list), keyName);
+    if(!func_isNull(*myReturn)){
+        char* name = (char*)malloc(16 * sizeof(char));
+        int id;
+
+        printf("\nUpdate the id: ");
+        scanf("%d", &id);
+        (*myReturn)->id = id;
+        printf("\nUpdate the name: ");
+        scanf("%s", name);
+        strcpy((*myReturn)->name, name);
+    }
+}
+
+void func_delete(struct No** list, char* keyName){
+    
+}
+
 /* Função principal */
 int main(int argc, char* argv[]){
     
@@ -74,13 +105,20 @@ int main(int argc, char* argv[]){
     myList = func_setNull();
     
     do{
-        printf("\n\nPress \'r\' or \'R\' to register.\nPress \'p\' or \'P\' to printer.\nPress 'x' or 'X' to exit.\n>>>");
+        printf("\n\nPress \'r\' or \'R\' to register.\nPress \'p\' or \'P\' to printer.\nPress \'s\' or \'S\' to search.\nPress \'u\' or \'U\' to update\nPress 'x' or 'X' to exit.\n>>>");
         scanf(" %c", &answer);
         if (answer == 'r' || answer == 'R'){
             func_add(&myList);
         } else if (answer == 'p' || answer == 'P'){
             func_print(myList);
-        } else if (answer == 'x' || answer == 'X'){
+        }else if (answer == 's' || answer == 'S'){
+            if(func_search(&myList, "Leonardo"))
+                printf("\nChave encontrada!\n");
+            else
+                printf("\nNao encontrada!\n");
+        }else if (answer == 'u' || answer == 'U'){
+            func_update(&myList, "Leonardo"); 
+        }else if (answer == 'x' || answer == 'X'){
             printf("The end!\n"); 
         }
     }while(answer != 'x' && answer != 'X');
