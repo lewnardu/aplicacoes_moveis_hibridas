@@ -3,10 +3,15 @@
 #include <malloc.h>
 #include <string.h>
 
+struct Dados{
+	int id;
+    char* name;
+
+};
+
 /* Criação da struct No para a lista duplamente encadeada*/
 struct No {
-    int id;
-    char* name;
+    struct Dados info;
     struct No* before; /* Aponta para nó anterior na lista */
     struct No* next; /* Aponta para o próximo nó da lista */
     struct No* last; /* Aponta para o ultimo elemento inserido na lista */
@@ -14,6 +19,7 @@ struct No {
 
 /* Funções do programa */
 
+/* Tornar um ponteiro NULL*/
 struct No* func_setNull(){
     return NULL;
 }
@@ -29,48 +35,46 @@ void func_print(struct No* list){
         printf("\n\nNo more nodes!\n\n");
         return;
     }
-    printf("\n\nID : %d", list->id);
-    printf("\nNAME : %s", list->name);
-    if(list->before != NULL) printf("\nBEFORE : %s", list->before->name);
-    if(list->next != NULL) printf("\nNEXT : %s", list->next->name);
+    printf("\n\nID : %d", list->info.id);
+    printf("\nNAME : %s", list->info.name);
+    if(list->before != NULL) printf("\nBEFORE : %s", list->before->info.name);
+    if(list->next != NULL) printf("\nNEXT : %s", list->next->info.name);
     func_print(list->next); /* Chamada recursiva da função */
 }
 
 /* Função que insere um novo nó na lista, mas não ordenadamente */
-void func_insert(struct No** list, struct No* before, int newId, char* newName){
+void func_insert(struct No** list, struct No* before, struct Dados myInfo){
     if(func_isNull(*list)){
         *list = (struct No*)malloc(sizeof(struct No));
         if(func_isNull(*list)){
             printf("\nError! Memory allocation.\n");
             return;
         }
-        (*list)->id = newId;
-        (*list)->name = (char*)malloc(16 * sizeof(char));
-        strcpy((*list)->name, newName);
+        (*list)->info = myInfo;
         (*list)->next = func_setNull();
         (*list)->before = before;
         (*list)->last = (*list);
         printf("\nInsert was done!\n");
         return;
     }
-    func_insert(&(*list)->last->next, (*list)->last, newId, newName);/* Chamada recursiva da função */
+    func_insert(&(*list)->last->next, (*list)->last, myInfo);/* Chamada recursiva da função */
 }
 
 /* Função que recebe a entrada dos dados do novo nó e os envia para func_insert() */
 void func_add(struct No** list){
-    char* name = (char*)malloc(16 * sizeof(char));
-    int id;
+    struct Dados myInfo;
     printf("\nEnter the id: ");
-    scanf("%d", &id);
+    scanf("%d", &myInfo.id);
     printf("\nEnter the name: ");
-    scanf(" %s", name);
-    func_insert(list, NULL, id, name);
+    myInfo.name = (char*)malloc(16 * sizeof(char));
+    scanf(" %[^\n]", myInfo.name);
+    func_insert(list, NULL, myInfo);
 }
 
 /* Função de recuperação de um nó através do atributo name como chave */
 struct No** func_search(struct No** list, char* keyName){
     if(!func_isNull(*list)){
-        if(strcmp((*list)->name, keyName) == 0) return list;
+        if(strcmp((*list)->info.name, keyName) == 0) return list;
         else return func_search(&(*list)->next, keyName);/* Chamada recursiva da função */
     }
     return NULL; /* Retornando NULL quando a chave não for encontrada na lista */
@@ -79,9 +83,9 @@ struct No** func_search(struct No** list, char* keyName){
 /* Função de atualização de um nó da lista */
 void func_update(struct No** list){
     printf("\nUpdate the id: ");
-    scanf("%d", &(*list)->id);
+    scanf("%d", &(*list)->info.id);
     printf("\nUpdate the name: ");
-    scanf(" %s", (*list)->name);
+    scanf(" %[^\n]", (*list)->info.name);
     printf("\nDone!\n");
 }
 
@@ -109,12 +113,9 @@ void func_delete(struct No** list){
 
 /* Função principal */
 int main(int argc, char* argv[]){
-    
     struct No* myList;
     char answer;
-
     myList = func_setNull();
-    
     /* Laço de apresentação do menu de funções do programa */
     do{
         printf("\n\nPress \'r\' or \'R\' to register.\nPress \'d\' or \'D\' to delete\nPress \'p\' or \'P\' to printer.\nPress \'s\' or \'S\' to search.\nPress \'u\' or \'U\' to update\nPress 'x' or 'X' to exit.\n>>>");
@@ -126,25 +127,24 @@ int main(int argc, char* argv[]){
         }else if (answer == 's' || answer == 'S'){
             char* name = (char*)malloc(16 * sizeof(char));
             printf("Enter the name for search: ");
-            scanf(" %s", name);
+            scanf(" %[^\n]", name);
             if(func_search(&myList, name)) printf("\nThe key's in the list!\n");
             else printf("\nKey not found!\n");
         }else if (answer == 'u' || answer == 'U'){
             char* name = (char*)malloc(16 * sizeof(char));
             printf("Enter the name to edit node: ");
-            scanf(" %s", name);
+            scanf(" %[^\n]", name);
             if(func_search(&myList, name)) func_update(func_search(&myList, name)); 
             else printf("\nKey not found!\n");
         }else if (answer == 'd' || answer == 'D'){
             char* name = (char*)malloc(16 * sizeof(char));
             printf("Enter the name to delete node: ");
-            scanf(" %s", name);
+            scanf(" %[^\n]", name);
             if(func_search(&myList, name)) func_delete(func_search(&myList, name)); 
             else printf("\nKey not found!\n");
         }else if (answer == 'x' || answer == 'X'){
             printf("\nThe end!\n"); 
         }
     }while(answer != 'x' && answer != 'X');
-
     return 0;
 }
